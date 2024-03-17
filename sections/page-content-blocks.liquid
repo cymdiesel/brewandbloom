@@ -1,0 +1,257 @@
+{% assign page_handle = page.handle %}
+{% assign page_title = page.title %}
+
+{% if section.blocks.size > 0 %}
+  {%- capture collection_items -%}
+{%- for block in section.blocks -%}
+  {% if block.settings.page_handle == page_handle %}
+    {%- render 'collection-item', block: block,  apply_overlay: block.settings.apply_overlay -%}
+    <a href="{{ block.settings.button_link_2 }}" class="CollectionItem__Link">{{ block.settings.button_text_2 }}</a>
+  {%- endif -%}
+{%- endfor -%}
+  {%- endcapture -%}
+  {%- if section.settings.stack_on_mobile -%}
+    <div class="CollectionList CollectionList--grid {% if section.settings.add_spacing %}CollectionList--spaced{% endif %}">
+      {{ collection_items }}
+    </div>
+  {%- else -%}
+    <div class="Carousel Carousel--insideDots CollectionList {% if section.settings.add_spacing %}CollectionList--spaced{% endif %}" data-flickity-config='{{ flickity_options }}'>
+      {{ collection_items }}
+    </div>
+  {%- endif -%}
+{% endif %}
+
+<style>
+  #shopify-section-{{ section.id }} .CollectionItem .Heading,
+  #shopify-section-{{ section.id }} .flickity-page-dots {
+    color: {{ section.settings.text_color }};
+    font-weight: 700;
+  }
+
+  #shopify-section-{{ section.id }} .CollectionItem__Link {
+    overflow: hidden;
+    font-weight: 700;
+    color: {{ section.settings.button_color }};
+    border: none;
+    padding: 16px 30px;
+    box-shadow: inset 0px 0px 0 2px #ffffff;
+  }
+
+  #shopify-section-{{ section.id }} .CollectionItem__Link::before {
+    background-color: {{ section.settings.text_color }};
+    border-radius: 50px;
+  }
+
+  @media (-moz-touch-enabled: 0), (hover: hover) {
+    #shopify-section-{{ section.id }} .CollectionItem__Link:hover {
+      color: {{ section.settings.text_color }};
+    }
+   #shopify-section-{{ section.id }} .CollectionItem__Link:hover::before {
+      transform: scale(0, 1)
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Content block",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "select",
+      "id": "image_size",
+      "label": "Image size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "add_spacing",
+      "label": "Add spacing",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "expand_collection",
+      "label": "Expand collections to fill row",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "stack_on_mobile",
+      "label": "Stack on mobile",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text",
+      "default": "#363636"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Content Block",
+      "settings": [
+        {
+            "type": "page",
+            "id": "page_handle",
+            "label": "Select a page"
+          },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "1120 x 1200px .jpg recommended"
+        },
+        {
+          "type": "select",
+          "id": "image_alignment",
+          "label": "Image alignment",
+          "options": [
+            {
+              "value": "top left",
+              "label": "Top left"
+            },
+            {
+              "value": "top center",
+              "label": "Top center"
+            },
+            {
+              "value": "top right",
+              "label": "Top right"
+            },
+            {
+              "value": "center left",
+              "label": "Middle left"
+            },
+            {
+              "value": "center center",
+              "label": "Middle center"
+            },
+            {
+              "value": "center right",
+              "label": "Middle right"
+            },
+            {
+              "value": "bottom left",
+              "label": "Bottom left"
+            },
+            {
+              "value": "bottom center",
+              "label": "Bottom center"
+            },
+            {
+              "value": "bottom right",
+              "label": "Bottom right"
+            }
+          ],
+          "default": "center center"
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "Content position",
+          "options": [
+            {
+              "value": "middleLeft",
+              "label": "Middle left"
+            },
+            {
+              "value": "middleRight",
+              "label": "Middle right"
+            },
+            {
+              "value": "middleCenter",
+              "label": "Middle center"
+            },
+            {
+              "value": "bottomLeft",
+              "label": "Bottom left"
+            },
+            {
+              "value": "bottomRight",
+              "label": "Bottom right"
+            },
+            {
+              "value": "bottomCenter",
+              "label": "Bottom center"
+            }
+          ],
+          "default": "bottomLeft"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Sub-heading",
+          "default": "Sub-heading"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Collection name"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "View products"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link",
+          "info": "If none is set, collection URL is used."
+        },
+                {
+          "type": "text",
+          "id": "button_text_2",
+          "label": "Button text 2",
+          "default": "View products"
+        },
+        {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "Button link 2",
+          "info": "If none is set, collection URL is used."
+        },
+        {
+          "type": "checkbox",
+          "id": "apply_overlay",
+          "label": "Apply overlay on image",
+          "info": "This can improve text visibility.",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": []
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

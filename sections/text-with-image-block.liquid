@@ -1,0 +1,152 @@
+{% if section.blocks.size > 0 %}
+	{% for block in section.blocks %}
+<section class="Section {% unless block.settings.image %}Section--spacingNormal{% endunless %}">
+  {%- capture section_content -%}
+    <div class="FeatureText__ContentWrapper" style="color: {{block.settings.text_color}};">
+      <div class="FeatureText__Content">
+        {%- if block.settings.subheading != blank or block.settings.title != blank -%}
+          <header class="SectionHeader">
+
+            {%- if block.settings.title != blank -%}
+              <h2 class="SectionHeader__Heading Heading u-h1" style="color: {{block.settings.text_color}}; font-weight: 700">{{ block.settings.title | escape }}</h2>
+            {%- endif -%}
+
+            {%- if block.settings.subheading != blank -%}
+              <h3 class="SectionHeader__SubHeading Heading u-h6" style="color: {{block.settings.text_color}};">{{ block.settings.subheading | escape }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.link_text != blank -%}
+              <a href="{{ block.settings.link_url }}" class="CollectionItem__Link Button" style="color: #ffffff;">{{ block.settings.link_text | escape }}</a>
+            {%- endif -%}
+          </header>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endcapture -%}
+
+  {%- capture section_image -%}
+    {%- if block.settings.image != blank -%}
+      <div class="FeatureText__ImageWrapper">
+        {%- capture supported_sizes -%}{%- render 'image-size', sizes: '400,600,700,800,900,1000,1200', image: block.settings.image -%}{%- endcapture -%}
+
+        <div class="AspectRatio" style="max-width: {{ block.settings.image.width }}px; --aspect-ratio: {{ block.settings.image.aspect_ratio }}">
+          {%- assign image_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          <img class="Image--lazyLoad Image--slide{{ block.settings.image_position | capitalize }}" data-src="{{ image_url }}" data-expand="-200" data-widths="[{{ supported_sizes }}]" data-sizes="auto" alt="{{ block.settings.image.alt | escape }}">
+
+          <noscript>
+            <img src="{{ block.settings.image | img_url: '800x' }}" alt="{{ block.settings.image.alt | escape }}">
+          </noscript>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endcapture -%}
+
+  <div class="FeatureText {% if block.settings.image != blank %}FeatureText--withImage FeatureText--image{{ block.settings.image_position | capitalize }}{% endif %}">
+    {%- if block.settings.image_position == 'left' -%}
+      {{- section_image -}}
+      {{- section_content -}}
+    {%- else -%}
+      {{- section_content -}}
+      {{- section_image -}}
+    {%- endif -%}
+  </div>
+</section>
+           {%- endfor -%}
+       {%- endif -%}
+
+<style>
+  #shopify-section-text-with-image-block .CollectionItem__Link {
+    overflow: hidden;
+    font-weight: 700;
+    color: #ffffff;
+    border: none;
+    padding: 16px 30px;
+    box-shadow: inset 0px 0px 0 2px #DA5162;
+  }
+
+  #shopify-section-text-with-image-block .CollectionItem__Link::before {
+    background-color: #DA5162;
+    border-radius: 50px;
+  }
+
+  @media (-moz-touch-enabled: 0), (hover: hover) {
+    #shopify-section-text-with-image-block .CollectionItem__Link:hover {
+      color: #DA5162;
+    }
+   #shopify-section-text-with-image-block .CollectionItem__Link:hover::before {
+      transform: scale(0, 1)
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Multiple Image Block",
+  "settings": [],
+  "blocks": [
+    {
+       "type": "text_block",
+        "name": "Image Block",
+        "settings": [
+        {
+      "type": "text",
+      "id": "subheading",
+      "label": "Sub-heading",
+      "default": "Sub-heading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Title"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1c1b1b"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "1200 x 1200px .png recommended"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link text"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link URL"
+    }
+        ]
+          }
+        ],
+  "presets": [
+    {
+      "category": "Text",
+      "name": "Rich text with image",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,92 @@
+{% assign page_handle = page.handle %}
+{% assign page_title = page.title %}
+
+{% if section.blocks.size > 0 %}
+  {% for block in section.blocks %}
+    {% assign num = forloop.index | modulo: 2 %}
+    {% if block.settings.image != blank %}
+        {%- capture supported_sizes -%}{%- render 'image-size', sizes: '200,400,600,700,800,900,1000,1200', image: block.settings.image -%}{%- endcapture -%}
+        {%- assign image_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+        <div class="AboutUsTemplate {% if num == 0 %}row-reverse{% endif %} CollectionList">
+          <img class="ProductItem__Image Image--lazyLoad Image--fadeIn" data-src="{{ image_url }}" data-widths="[{{ supported_sizes }}]" data-sizes="auto" alt="{{ product.featured_media.alt | escape }}" data-media-id="{{ product.featured_media.id }}">
+          <div class="AboutUsTemplate--block">
+            {%- if block.settings.about_us_name != blank -%}
+          <h3 class="SectionHeader__SubHeading Heading u-h6">{{ block.settings.about_us_name | escape }}</h3>
+        {%- endif -%}
+
+        {%- if block.settings.about_us_description != blank -%}
+          <p class="SectionHeader__Description">{{ block.settings.about_us_description | escape }}</p>
+        {%- endif -%}
+          </div>
+      </div>
+		{% endif %}
+	{% endfor %}
+{% endif %}
+
+<style>
+  .AboutUsTemplate {
+    display: flex;
+    flex-direction: column;
+  }
+  .AboutUsTemplate img, .AboutUsTemplate--block {
+    width: 100%
+  }
+  .AboutUsTemplate--block {
+    padding: 2rem 0;
+  }
+
+
+@media screen and (min-width: 769px) {
+    .AboutUsTemplate {
+    flex-direction: row;
+    align-items: center;
+  }
+    .row-reverse {
+    flex-direction: row-reverse;
+  }
+    .AboutUsTemplate img, .AboutUsTemplate--block {
+    width: 50%
+  }
+    .AboutUsTemplate--block {
+    padding: 2rem;
+  }
+}
+</style>
+
+{% schema %}
+  {
+    "name": "About Us Section",
+    "settings": [],
+     "blocks": [
+      {
+        "type": "text_block",
+        "name": "About Us Block",
+        "settings": [
+          {
+            "type": "text",
+            "id": "about_us_name",
+            "label": "Name"
+          },
+           {
+            "type": "textarea",
+            "id": "about_us_description",
+            "label": "Description",
+           "default": "About Me"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

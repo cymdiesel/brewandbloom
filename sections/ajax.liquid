@@ -1,0 +1,45 @@
+{%- layout none -%}
+{%- assign selected_location = request.query_params.location -%}
+{%- assign selected_type = request.query_params.type -%}
+
+{% layout none %}
+{
+  "message": "AJAX request received successfully!"
+}
+
+
+{%- capture collection_items -%}
+  {%- for block in section.blocks -%}
+    {%- assign location_filter = block.settings.event_location -%}
+    {%- assign type_filter = block.settings.event_type -%}
+
+    {%- if location_filter == selected_location or selected_location == 'all' -%}
+      {%- if type_filter == selected_type or selected_type == 'all' -%}
+        {%- assign collection_image = block.settings.image -%}
+        <div class="CollectionItem" data-location="{{ location_filter }}" data-type="{{ type_filter }}">
+          <div class="CollectionItem__Wrapper CollectionItem__Wrapper--event" {% if collection_image %}style="background-image: url({{ collection_image | img_url: '1x1' }})"{% endif %}>
+            <div class="CollectionItem__ImageWrapper">
+              <div class="CollectionItem__Image hide-no-js"
+                   style="background-position: {{ block.settings.image_alignment }}"
+                   {% if collection_image %}data-bgset="{{ collection_image | img_url: '1000x' }} 1000w, {{ collection_image | img_url: '1500x' }} 1500w"{% endif %}>
+                {%- if collection_image == nil -%}
+                  <div class="PlaceholderBackground PlaceholderSvg--dark">
+                    {%- capture image_name -%}lifestyle-{% cycle 'anchor': '1', '2' %}{%- endcapture -%}
+                    {{ image_name | placeholder_svg_tag: 'PlaceholderBackground__Svg' }}
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+          <div>
+            <h2 class="SectionHeader__Heading SectionHeader__Heading--emphasize Heading u-h1">{{ block.settings.event_title | escape }}</h2>
+            <h3 class="SectionHeader__SubHeading Heading u-h6">{{ block.settings.event_time | escape }}</h3>
+            {{ block.settings.event_description }}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{{ collection_items }}

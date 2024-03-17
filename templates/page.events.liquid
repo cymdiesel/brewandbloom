@@ -1,0 +1,23 @@
+{% comment %} 
+
+<main id="main" role="main">
+{% section 'slideshow' %}
+{% section 'custom-html' %}
+{% section 'slideshow' %}
+{% section 'custom-html' %}
+{% section 'custom-html' %}
+  </main>
+{% endcomment %}
+
+
+  <div class="PageLarge">
+   {% section 'page-hero' %}
+
+      {% section 'page-events-block' %}
+
+  <div class="PageContent Rte PageRoute--{{ page.handle }}">
+    {{ page.content }}
+  </div>
+
+  {% section 'instafeed' %}
+</div>

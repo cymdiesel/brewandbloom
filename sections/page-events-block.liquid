@@ -1,0 +1,277 @@
+<style>
+    .CollectionItem__Wrapper--event {
+      aspect-ratio: 1;
+      height: auto;
+    }
+    .CollectionList {
+      justify-content: center;
+    }
+  @media only screen and (min-width: 768px) {
+    .CollectionItem {
+      padding: 1rem;
+    }
+  }
+    .SectionHeader__Heading.SectionHeader__Heading {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    label {
+      margin-right: 10px; /* Adjust the margin as needed */
+    }
+
+    #locationFilter,
+    #typeFilter {
+      margin-right: 10px; /* Adjust the margin as needed */
+      padding: 8px; /* Adjust the padding as needed */
+      background-color: #F1A8A9; /* Change the background color as needed */
+      border: 1px solid #F1A8A9; /* Add border for better visibility */
+      border-radius: 5px; /* Add border radius for rounded corners */
+      color: #FFFFFF;
+    }
+
+    /* Center the filter controls */
+    div {
+      text-align: center;
+      margin-bottom: 20px; /* Adjust the margin as needed */
+    }
+</style>
+
+<!-- Filter Controls -->
+<div>
+  <label for="locationFilter">Filter by Location:</label>
+  <select id="locationFilter">
+    <option value="all">-All Locations-</option>
+    <option value="downtown">Downtown</option>
+    <option value="southside">Southside</option>
+  </select>
+
+  <label for="typeFilter">Filter by Event Type:</label>
+  <select id="typeFilter">
+    <option value="all">-All Types-</option>
+    <option value="wellness">Wellness</option>
+    <option value="craft">Crafty Activity</option>
+    <option value="networking">Networking</option>
+    <!-- Add more event types as needed -->
+  </select>
+</div>
+
+{% if section.blocks.size > 0 %}
+  {%- capture collection_items -%}
+    {%- for block in section.blocks -%}
+      {%- assign location_filter = block.settings.event_location -%}
+      {%- assign type_filter = block.settings.event_type -%}
+
+      {%- if location_filter == selected_location or selected_location == 'all' -%}
+        {%- if type_filter == selected_type or selected_type == 'all' -%}
+          {%- assign collection_image = block.settings.image -%}
+
+          {%- if block.settings.event_link -%}
+            <a href="{{ block.settings.event_link }}" class="CollectionItem" data-location="{{ location_filter }}" data-type="{{ type_filter }}">
+          {%- else -%}
+            <div class="CollectionItem" data-location="{{ location_filter }}" data-type="{{ type_filter }}">
+          {%- endif -%}
+            
+            <div class="CollectionItem__Wrapper CollectionItem__Wrapper--event" {% if collection_image %}style="background-image: url({{ collection_image | img_url: '1x1' }})"{% endif %}>
+              <div class="CollectionItem__ImageWrapper">
+                <div class="CollectionItem__Image hide-no-js"
+                     style="background-position: {{ block.settings.image_alignment }}"
+                     {% if collection_image %}data-bgset="{{ collection_image | img_url: '1000x' }} 1000w, {{ collection_image | img_url: '1500x' }} 1500w"{% endif %}>
+                  {%- if collection_image == nil -%}
+                    <div class="PlaceholderBackground PlaceholderSvg--dark">
+                      {%- capture image_name -%}lifestyle-{% cycle 'anchor': '1', '2' %}{%- endcapture -%}
+                      {{ image_name | placeholder_svg_tag: 'PlaceholderBackground__Svg' }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+            <div>
+              <h2 class="SectionHeader__Heading SectionHeader__Heading--emphasize Heading u-h1">{{ block.settings.event_title | escape }}</h2>
+              <h3 class="SectionHeader__SubHeading Heading u-h6">{{ block.settings.event_time | escape }}</h3>
+              {{ block.settings.event_description }}
+            </div>
+          {%- if block.settings.event_link -%}
+            </a>
+          {%- else -%}
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endcapture -%}
+  <div class="PageContent">
+    <div class="CollectionList CollectionList--grid">
+      {{ collection_items }}
+    </div>
+  </div>
+{% endif %}
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js" defer></script>
+
+<script>
+  // Add JavaScript code to handle filter changes
+  document.getElementById('locationFilter').addEventListener('change', updateEvents);
+  document.getElementById('typeFilter').addEventListener('change', updateEvents);
+
+  function updateEvents() {
+    var selectedLocation = document.getElementById('locationFilter').value;
+    var selectedType = document.getElementById('typeFilter').value;
+
+    // Make an AJAX request to your server
+    $.ajax({
+      url: '/?sections=ajax',
+      type: 'GET',
+      data: {
+        location: selectedLocation,
+        type: selectedType
+      },
+      success: function (data) {
+        // Update the events on the page based on the received data
+        updateEventsOnPage(data);
+      },
+      error: function (error) {
+        console.error('Error fetching events:', error);
+      }
+    });
+  }
+
+  function updateEventsOnPage(data) {
+    // Parse and update the events on the page based on the received data
+    // This might involve manipulating the DOM to replace existing events with new ones
+    $('.CollectionList').html(data);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Events Block",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Content Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Square .jpg recommended"
+        },
+        {
+          "type": "select",
+          "id": "image_alignment",
+          "label": "Image alignment",
+          "options": [
+            {
+              "value": "top left",
+              "label": "Top left"
+            },
+            {
+              "value": "top center",
+              "label": "Top center"
+            },
+            {
+              "value": "top right",
+              "label": "Top right"
+            },
+            {
+              "value": "center left",
+              "label": "Middle left"
+            },
+            {
+              "value": "center center",
+              "label": "Middle center"
+            },
+            {
+              "value": "center right",
+              "label": "Middle right"
+            },
+            {
+              "value": "bottom left",
+              "label": "Bottom left"
+            },
+            {
+              "value": "bottom center",
+              "label": "Bottom center"
+            },
+            {
+              "value": "bottom right",
+              "label": "Bottom right"
+            }
+          ],
+          "default": "center center"
+        },
+        {
+          "type": "url",
+          "id": "event_link",
+          "label": "Event link",
+          "info": "Link if needed"
+        },
+        {
+          "type": "text",
+          "id": "event_title",
+          "label": "Event Title",
+          "default": "The Event"
+        },
+        {
+          "type": "text",
+          "id": "event_time",
+          "label": "Event Time",
+          "default": "9:00AM"
+        },
+
+        {
+          "type": "richtext",
+          "id": "event_description",
+          "label": "Event Description",
+          "default": "<p>Event Description</p>"
+        },
+        {
+          "type": "select",
+          "id": "event_location",
+          "label": "Event Location",
+          "options": [
+            {
+              "value": "downtown",
+              "label": "Downtown"
+            },
+            {
+              "value": "southside",
+              "label": "Southside"
+            }
+          ],
+          "default": "downtown"
+        },
+        {
+          "type": "select",
+          "id": "event_type",
+          "label": "Event Type",
+          "options": [
+            {
+              "value": "wellness",
+              "label": "Wellness"
+            },
+                          {
+              "value": "craft",
+              "label": "Craft"
+            },
+            {
+              "value": "networking",
+              "label": "Networking"
+            }
+          ],
+          "default": "wellness"
+        }
+      ]
+    }
+  ],
+  "presets": []
+}
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

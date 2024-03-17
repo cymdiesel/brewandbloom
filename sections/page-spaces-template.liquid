@@ -1,0 +1,131 @@
+{% if section.blocks.size > 0 %}
+	{% for block in section.blocks %}
+{%- assign collection_image = block.settings.image -%}
+        {%- capture mobile_size -%}750x{% if collection_image.height >= 960 %}960{% else %}{{ collection_image.height }}{% endif %}{%- endcapture -%}
+        <div class="CollectionItem__Wrapper CollectionItem__Wrapper--{{ section.settings.image_size }}" {% if collection_image %}style="background-image: url({{ collection_image | img_url: '1x1' }})"{% endif %}>
+    <div class="CollectionItem__ImageWrapper">
+      <div class="CollectionItem__Image Image--contrast {% if block.settings.text_position == 'right' %}Image--contrast--right{% else %}Image--contrast--left{% endif %} Image--lazyLoad Image--zoomOut Image--grayscale hide-no-js "
+           style="background-position: {{ block.settings.image_alignment }}"
+           data-optimumx="1.4"
+           data-expand="-150"
+           {% if collection_image %}data-bgset="{{ collection_image | img_url: mobile_size, crop: image_crop }} 750w, {{ collection_image | img_url: '1000x' }} 1000w, {{ collection_image | img_url: '1500x' }} 1500w"{% endif %}>
+        {%- if collection_image == nil -%}
+          <div class="PlaceholderBackground PlaceholderSvg--dark">
+            {%- capture image_name -%}lifestyle-{% cycle 'anchor': '1', '2' %}{%- endcapture -%}
+            {{ image_name | placeholder_svg_tag: 'PlaceholderBackground__Svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="CollectionItem__Content" {%- if block.settings.text_position == 'right' -%} style="justify-content: flex-end;" {%- endif -%}>
+      <header class="SectionHeader" style="color: {{block.settings.text_color}};">
+
+        <h2 class="SectionHeader__Heading SectionHeader__Heading--emphasize Heading u-h1" style="color: {{block.settings.text_color}}; font-weight: 700;">{{ block.settings.title | default: collection.title | escape }}</h2>
+
+        {%- if block.settings.description != blank -%}
+          <p class="SectionHeader__Description" style="color: {{block.settings.text_color}};">{{ block.settings.description }}</p>
+        {%- endif -%}
+        
+      </header>
+    </div>
+  </div>
+           {%- endfor -%}
+       {%- endif -%}
+
+<style>
+  @media screen and (min-width: 640px) {
+  .Image--contrast--right:after {
+    background-image: linear-gradient(270deg,rgba(4,4,4,.75) 31%,rgba(54,54,54,.2) 91%);
+  }
+    .Image--contrast--left:after {
+    background-image: linear-gradient(90deg,rgba(4,4,4,.75) 31%,rgba(54,54,54,.2) 91%);
+  }
+  }
+  #shopify-section-page-spaces-template .CollectionItem__Content {
+    display: flex;
+    left: 0;
+    margin: 0 auto;
+    transform: translate(0%,-50%);
+    right: 0;
+  }
+
+ @media screen and (min-width: 640px) {
+  #shopify-section-page-spaces-template .CollectionItem__Content {
+    max-width: 1500px;
+    margin: 0 auto;
+    transform: translate(0%,-50%);
+    right: 0;
+  }
+ #shopify-section-page-spaces-template .CollectionItem__Content .SectionHeader {
+   max-width: 50%;
+  } 
+ #shopify-section-page-spaces-template .CollectionItem__Content .SectionHeader__Heading {
+   font-size: 2rem !important;
+  } 
+   
+ }
+</style>
+
+{% schema %}
+{
+  "name": "Spaces Blocks",
+  "settings": [],
+  "blocks": [
+    {
+       "type": "text_block",
+        "name": "Image Block",
+        "settings": [
+
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Title"
+    },
+                  {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Description</p>"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1c1b1b"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "1200 x 1200px .png recommended"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "right"
+    }
+        ]
+          }
+        ],
+  "presets": [
+    {
+      "category": "Text",
+      "name": "Rich text with image",
+      "settings": {}
+    }
+  ]
+}
+{% endschema %}
